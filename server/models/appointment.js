@@ -6,31 +6,31 @@ const schedule = require('./schedule');
 const doctor = require('./doctor');
 
 const Appointment = sequelize.define('Appointment', {
-    FIRST_NAME:{
+    FIRST_NAME: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    MIDDLE_NAME:{
+    MIDDLE_NAME: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    LAST_NAME:{
+    LAST_NAME: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    AGE:{
+    AGE: {
         type: DataTypes.INTEGER,
-        allowNull:false
+        allowNull: false
     },
     DOCTOR_NAME: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
     },
-    APPOINTMENT_TIME: {  // Corrected typo from AppoinmentTime to AppointmentTime
+    APPOINTMENT_TIME: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
     },
-    APPOINTMENT_DATE:{
+    APPOINTMENT_DATE: {
         type: DataTypes.DATEONLY,
         allowNull: false
     },
@@ -46,73 +46,72 @@ const Appointment = sequelize.define('Appointment', {
         type: DataTypes.STRING,
         defaultValue: false
     },
-    STATUS:{
-        type:DataTypes.STRING,
+    STATUS: {
+        type: DataTypes.STRING,
         allowNull: false
     },
-    SCHEDULE_ID:{
+    SCHEDULE_ID: {
         type: DataTypes.INTEGER,
         allowNull: false
     }
 });
 
+// Associations
+
+// Secretary association
 secretary.hasMany(Appointment, {
     foreignKey: {
-        name: 'SECRETARY_ID',
+        name: 'fk_secretary_id',  // Unique foreign key constraint name
         allowNull: true
     }
 });
 Appointment.belongsTo(secretary, {
     foreignKey: {
-        name: 'SECRETARY_ID',
+        name: 'fk_secretary_id',  // Same name to match
         allowNull: true
     }
 });
 
-Appointment.belongsTo(schedule,{
-    foreignKey:{
-        name: 'SCHEDULE_ID',
-        allowNull:false
-    }
-});
-schedule.hasMany(Appointment,{
+// Schedule association
+schedule.hasMany(Appointment, {
     foreignKey: {
-        name: 'SCHEDULE_ID',
-        allowNull:false
+        name: 'fk_schedule_id',  // Unique foreign key constraint name
+        allowNull: false
     }
 });
-
-
-Appointment.belongsTo(doctor,{
+Appointment.belongsTo(schedule, {
     foreignKey: {
-        name: 'DOCTOR_ID',
-        allowNull:false
+        name: 'fk_schedule_id',  // Same name to match
+        allowNull: false
     }
 });
-doctor.hasMany(Appointment,{
+
+// Doctor association
+doctor.hasMany(Appointment, {
     foreignKey: {
-        name: 'DOCTOR_ID',
-        allowNull:false
+        name: 'fk_doctor_id',  // Unique foreign key constraint name
+        allowNull: false
+    }
+});
+Appointment.belongsTo(doctor, {
+    foreignKey: {
+        name: 'fk_doctor_id',  // Same name to match
+        allowNull: false
     }
 });
 
-
-// A patient can have many appointments
+// Patient association
 patient.hasMany(Appointment, {
     foreignKey: {
-        name: 'PATIENT_ID',
+        name: 'fk_patient_id',  // Unique foreign key constraint name
         allowNull: true
     }
 });
-
-// An appointment belongs to one patient
 Appointment.belongsTo(patient, {
     foreignKey: {
-        name: 'PATIENT_ID',
+        name: 'fk_patient_id',  // Same name to match
         allowNull: true
     }
 });
 
-
-
-module.exports = Appointment;  // Corrected from modules.exports to module.exports
+module.exports = Appointment;
