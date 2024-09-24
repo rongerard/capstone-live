@@ -2,6 +2,7 @@ require('dotenv').config();  // Add this line to load .env
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const sequelize = require('./config/database');
 const authRoutes = require('./routes/secretary/auth');
 const appointmentsRoutes = require('./routes/secretary/appointments');
@@ -20,6 +21,7 @@ const appointmentPatientRoutes = require('./routes/patient/appointmentPatient');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors());  // Enable CORS for all routes
 app.use(bodyParser.json());
 
 //SECRETARY
@@ -88,3 +90,14 @@ server.on('error', (err) => {
     }
     process.exit(1); // Exit the process to avoid hanging
 });
+
+sequelize.authenticate()
+    .then(() => {
+        console.log('Database connected');
+        return sequelize.sync(); // Sync only after successful connection
+    })
+    .then(() => {
+        console.log('Tables synchronized');
+    })
+    .catch(err => console.error('Unable to connect to the database', err));
+
