@@ -1,42 +1,47 @@
-const {DataTypes} = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const schedule = require('./schedule');
+const Appointment = require('./appointment'); // Ensure correct path
+const QueueManagement = require('./queueManagement'); // Ensure correct path
 
-const queueManagement = sequelize.define('quemanagements', {
-    id:{
+const Queue = sequelize.define('Queue', {
+    id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    SCHEDULE_ID:{
+    QUEUE_NUMBER: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    DATE:{
-        type: DataTypes.DATEONLY,
+    APPOINTMENT_ID: {
+        type: DataTypes.INTEGER,
         allowNull: true
     },
-    START_TIME: {
-        type: DataTypes.TIME,
+    MESSAGE_ID: {
+        type: DataTypes.STRING,
         allowNull: true
     },
-    END_TIME: {
-        type: DataTypes.TIME,
+    PROGRESS: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    STATUS: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    SERVED: {
+        type: DataTypes.STRING,
         allowNull: true
     }
+}, {
+    timestamps: true
 });
 
-queueManagement.hasOne(schedule,{
-    foreignKey:{
-        name: 'SCHEDULE_ID',
-        allowNull: false
-    }
-});
+// Associations
+Queue.belongsTo(Appointment, { foreignKey: 'APPOINTMENT_ID', allowNull: true });
+Appointment.hasOne(Queue, { foreignKey: 'APPOINTMENT_ID', allowNull: true });
 
-schedule.belongsTo(queueManagement,{
-    foreignKey:{
-        name: 'SCHEDULE_ID',
-        allowNull:false
-    }
-});
-module.exports = queueManagement;
+QueueManagement.hasMany(Queue, { foreignKey: 'QUEUE_MANAGEMENT_ID', allowNull: false });
+Queue.belongsTo(QueueManagement, { foreignKey: 'QUEUE_MANAGEMENT_ID', allowNull: false });
+
+module.exports = Queue;
